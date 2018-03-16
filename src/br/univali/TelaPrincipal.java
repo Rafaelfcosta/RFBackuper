@@ -5,10 +5,16 @@
  */
 package br.univali;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.swing.UIManager;
+import javax.swing.JProgressBar;
+
 
 /**
  *
@@ -17,17 +23,18 @@ import javax.swing.UIManager;
 public class TelaPrincipal extends javax.swing.JFrame {
 
     File arquivo = null;
+    File backup = null;
     InputStream is = null;
     OutputStream os = null;
+    Core c = null;
     
     public TelaPrincipal() {
         this.setTitle("RFBackuper");
         this.setLocationRelativeTo(null);
         initComponents();
+        this.c = new Core(TelaPrincipal.this);
     }
-    
-    
-    
+       
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -49,11 +56,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         botaoBackup = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
         layout.columnWidths = new int[] {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-        layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0};
+        layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
         getContentPane().setLayout(layout);
 
         botaoSelecionarArquivo.setText("Selecionar");
@@ -130,6 +138,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         getContentPane().add(botaoFechar, gridBagConstraints);
 
         botaoBackup.setText("Backup!");
+        botaoBackup.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botaoBackupMouseClicked(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 12;
         gridBagConstraints.gridy = 8;
@@ -150,13 +163,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
         getContentPane().add(jLabel3, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridwidth = 13;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        getContentPane().add(jProgressBar1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void botaoFecharMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoFecharMouseClicked
-        this.dispose();
-    }//GEN-LAST:event_botaoFecharMouseClicked
 
     private void botaoSelecionarArquivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoSelecionarArquivoMouseClicked
         FileChooserFactory file = new FileChooserFactory(); 
@@ -174,12 +189,48 @@ public class TelaPrincipal extends javax.swing.JFrame {
         int i= file.showSaveDialog(null);
         
         if (i!=1){
-            arquivo = file.getSelectedFile();
-            this.jTextField2.setText(arquivo.getPath());
-            System.out.println(arquivo.getPath());
+            backup = file.getSelectedFile();
+            this.jTextField2.setText(backup.getPath());
+            System.out.println(backup.getPath());
         }
     }//GEN-LAST:event_botaoSelecionarDestinoMouseClicked
 
+    private void botaoBackupMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoBackupMouseClicked
+        int op = this.jComboBox1.getSelectedIndex();
+
+        try {
+            is = new FileInputStream(arquivo.getPath());
+            os = new FileOutputStream(backup.getPath());
+        } catch (FileNotFoundException ex) {
+            System.out.println("Algo errado aconteceu");
+        }
+
+        if(op == 1){
+            is = new BufferedInputStream(is);
+            os = new BufferedOutputStream(os);
+        }
+
+        this.jProgressBar1.setMaximum((int)arquivo.length());
+        
+        //Core c = new Core();
+        try {
+            c.fazerBackup(is, os);
+        } catch (Exception ex) {
+            System.out.println("Deu ruim no backup" + ex);
+        }
+    }//GEN-LAST:event_botaoBackupMouseClicked
+
+    private void botaoFecharMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoFecharMouseClicked
+        this.dispose();
+    }//GEN-LAST:event_botaoFecharMouseClicked
+    
+    public void atualizarProgressbar(int valor){
+        this.jProgressBar1.setValue(valor);
+    }
+    
+    public JProgressBar getProgressBar(){
+        return this.jProgressBar1;
+    }
       
     
     
@@ -203,6 +254,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
