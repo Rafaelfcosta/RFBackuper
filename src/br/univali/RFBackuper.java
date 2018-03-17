@@ -14,7 +14,11 @@ public class RFBackuper {
         }
         
         TelaPrincipal tela = new TelaPrincipal();
+        tela.setDefaultCloseOperation(TelaPrincipal.EXIT_ON_CLOSE);
+        tela.setLocationRelativeTo(null);
         tela.setVisible(true);
     }
+    
+    
     
 }

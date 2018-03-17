@@ -5,6 +5,7 @@
  */
 package br.univali;
 
+import java.io.File;
 import javax.swing.JFileChooser;
 
 /**
@@ -13,8 +14,9 @@ import javax.swing.JFileChooser;
  */
 public class FileChooserFactory extends JFileChooser{
 
-    public FileChooserFactory() {
+    public FileChooserFactory(File dir) {
         this.setDialogTitle("Selecione");
+        this.setCurrentDirectory(dir);
     }
     
 }

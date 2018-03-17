@@ -5,6 +5,11 @@
  */
 package br.univali;
 
+import excecoes.EntradaNula;
+import excecoes.SaidaNula;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Label;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -13,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
 
@@ -22,15 +29,15 @@ import javax.swing.JProgressBar;
  */
 public class TelaPrincipal extends javax.swing.JFrame {
 
-    File arquivo = null;
-    File backup = null;
-    InputStream is = null;
-    OutputStream os = null;
-    Core c = null;
+    private File arquivo = null;
+    private File backup = null;
+    private InputStream is = null;
+    private OutputStream os = null;
+    private Core c = null;
+    private static String DesktopUsuario = obterDektopUsuario();
     
     public TelaPrincipal() {
         this.setTitle("RFBackuper");
-        this.setLocationRelativeTo(null);
         initComponents();
         this.c = new Core(TelaPrincipal.this);
     }
@@ -56,12 +63,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         botaoBackup = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jProgressBar1 = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
         layout.columnWidths = new int[] {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-        layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
+        layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0};
         getContentPane().setLayout(layout);
 
         botaoSelecionarArquivo.setText("Selecionar");
@@ -163,18 +169,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
         getContentPane().add(jLabel3, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.gridwidth = 13;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(jProgressBar1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void botaoSelecionarArquivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoSelecionarArquivoMouseClicked
-        FileChooserFactory file = new FileChooserFactory(); 
+        FileChooserFactory file = new FileChooserFactory(new File(DesktopUsuario)); 
         int i= file.showOpenDialog(null);
         
         if (i!=1){
@@ -185,7 +185,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_botaoSelecionarArquivoMouseClicked
 
     private void botaoSelecionarDestinoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoSelecionarDestinoMouseClicked
-        FileChooserFactory file = new FileChooserFactory(); 
+        FileChooserFactory file = new FileChooserFactory(new File(DesktopUsuario)); 
         int i= file.showSaveDialog(null);
         
         if (i!=1){
@@ -197,43 +197,48 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void botaoBackupMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoBackupMouseClicked
         int op = this.jComboBox1.getSelectedIndex();
-
-        try {
+        
+        try{
+            if(jTextField1.getText().isEmpty()){
+                throw new EntradaNula();
+            }else if(jTextField2.getText().isEmpty()){
+                throw new SaidaNula();
+            }
             is = new FileInputStream(arquivo.getPath());
             os = new FileOutputStream(backup.getPath());
-        } catch (FileNotFoundException ex) {
-            System.out.println("Algo errado aconteceu");
+        }catch(EntradaNula ex){
+            aviso("Um arquivo de entrada deve ser informado");
+        }catch(SaidaNula ex){
+            aviso("Um arquivo de saída deve ser informado");
+        }
+        catch (FileNotFoundException ex) {
+            aviso("O arquivo informado não existe");
         }
 
         if(op == 1){
             is = new BufferedInputStream(is);
             os = new BufferedOutputStream(os);
         }
-
-        this.jProgressBar1.setMaximum((int)arquivo.length());
         
-        //Core c = new Core();
         try {
             c.fazerBackup(is, os);
         } catch (Exception ex) {
-            System.out.println("Deu ruim no backup" + ex);
+
         }
     }//GEN-LAST:event_botaoBackupMouseClicked
 
     private void botaoFecharMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botaoFecharMouseClicked
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_botaoFecharMouseClicked
     
-    public void atualizarProgressbar(int valor){
-        this.jProgressBar1.setValue(valor);
+    public void aviso(String msg){
+        JOptionPane.showMessageDialog(null, msg);
     }
     
-    public JProgressBar getProgressBar(){
-        return this.jProgressBar1;
+    private static String obterDektopUsuario(){
+        return (System.getProperty("user.home") + "/Desktop");
     }
-      
-    
-    
+
     public static void main(String args[]) {
                 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -241,8 +246,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 new TelaPrincipal().setVisible(true);
             }
         });
-        
-        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -254,7 +257,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
