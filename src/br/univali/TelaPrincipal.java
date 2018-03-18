@@ -204,11 +204,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
             is = new BufferedInputStream(is);
             os = new BufferedOutputStream(os);
         }
-        
         new Thread( new Runnable() {
             public void run() {
                 try {
-                    core.fazerBackup(is, os, arquivo.length());
+                   
+                        core.fazerBackup(is, os, arquivo.length());
+
                 } catch (Exception ex) {
                     
                 }
@@ -223,7 +224,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void botaoSelecionarArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoSelecionarArquivoActionPerformed
         FileChooserFactory file = new FileChooserFactory(new File(DesktopUsuario)); 
-        int i= file.showOpenDialog(null);
+        int i= file.showOpenDialog(this);
         
         if (i!=1){
             arquivo = file.getSelectedFile();
@@ -234,7 +235,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void botaoSelecionarDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoSelecionarDestinoActionPerformed
         FileChooserFactory file = new FileChooserFactory(new File(DesktopUsuario)); 
-        int i= file.showSaveDialog(null);
+        int i= file.showSaveDialog(this);
         
         if (i!=1){
             backup = file.getSelectedFile();
@@ -252,7 +253,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
     
     public void aviso(String msg){
-        JOptionPane.showMessageDialog(null, msg);
+        JOptionPane.showMessageDialog(this, msg);
     }
     
     private static String obterDektopUsuario(){
