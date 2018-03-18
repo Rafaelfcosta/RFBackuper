@@ -6,22 +6,29 @@ import java.util.concurrent.TimeUnit;
 
 public class Core {
     
-    TelaPrincipal tela;
+    Controlador controlador;
     
-    public Core(TelaPrincipal t) {
-        this.tela = t;
+    public Core(Controlador controlador) {
+        this.controlador = controlador;
     }   
     
-    public void fazerBackup(InputStream is, OutputStream os) throws Exception{        
+    public void fazerBackup(InputStream is, OutputStream os, long size) throws Exception{
+        
+        controlador.setMaxProgress((int)size);
+        
         long inicio = System.currentTimeMillis();
+        int cont = 0;
         int readByte;
+        controlador.toggleBotao(false);
         while((readByte = is.read()) != -1){
+            cont++;
+            controlador.setProgress(cont);
             os.write(readByte);
         }    
         
         is.close();
         os.close();
-        
+        controlador.toggleBotao(true);
         long fim = System.currentTimeMillis();
         long tempo = fim-inicio;
 
@@ -30,9 +37,9 @@ public class Core {
         if(tempo > 999){
             long seconds = TimeUnit.MILLISECONDS.toSeconds(fim-inicio);
             String s = String.valueOf(seconds);
-            tela.aviso("Backup realizado em: " + s + " segundos");
+            controlador.aviso("Backup realizado em: " + s + " segundos");
         }else{
-            tela.aviso("Backup realizado em: " + tempo + " milisegundos");
+            controlador.aviso("Backup realizado em: " + tempo + " milisegundos");
         }
         
     }
