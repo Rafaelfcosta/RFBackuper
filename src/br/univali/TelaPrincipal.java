@@ -7,9 +7,6 @@ package br.univali;
 
 import excecoes.EntradaNula;
 import excecoes.SaidaNula;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Label;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -18,9 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 
 
 /**
